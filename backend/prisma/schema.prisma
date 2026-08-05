@@ -18,4 +18,40 @@ model Image {
   id       Int      @id @default(autoincrement())
   title   String
   imageUrl       String
+  characters Character[]
+  scores Score[]
+  gameSessions GameSession[]
+}
+
+model Character {
+  id       Int      @id @default(autoincrement())
+  name     String
+  xPercent Float
+  yPercent Float
+  imageId  Int
+  image    Image    @relation(fields: [imageId], references: [id])
+}
+
+model GameSession {
+  id          String   @id @default(uuid())
+  imageId     Int
+  image       Image    @relation(fields: [imageId], references: [id])
+  startedAt   DateTime @default(now())
+  completed   Boolean  @default(false)
+  score       Score?
+}
+
+model Score {
+  id            Int @id @default(autoincrement())
+
+  playerName    String
+  timeTaken     Int
+
+  sessionId     String @unique
+  session       GameSession @relation(fields: [sessionId], references: [id])
+
+  imageId       Int
+  image         Image @relation(fields: [imageId], references: [id])
+
+  createdAt     DateTime @default(now())
 }
