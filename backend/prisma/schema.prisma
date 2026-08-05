@@ -19,7 +19,6 @@ model Image {
   title   String
   imageUrl       String
   characters Character[]
-  scores Score[]
   gameSessions GameSession[]
 }
 
@@ -28,12 +27,12 @@ model Character {
   name     String
   xPercent Float
   yPercent Float
-
+  imageUrl       String
   imageId  Int
   image    Image @relation(fields: [imageId], references: [id])
+  foundCharacters FoundCharacter[]
 
   @@unique([imageId, name])
-  foundCharacters FoundCharacter[]
   @@index([imageId])
 }
 
@@ -58,11 +57,8 @@ model Score {
   sessionId     String @unique
   session       GameSession @relation(fields: [sessionId], references: [id])
 
-  imageId       Int
-  image         Image @relation(fields: [imageId], references: [id])
-
   createdAt     DateTime @default(now())
-  @@index([imageId, timeTaken])
+  @@index([timeTaken])
 }
 
 model FoundCharacter {
