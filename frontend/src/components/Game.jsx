@@ -9,14 +9,12 @@ export default function Game() {
     naruto: false,
   });
 
-  console.log("foundCharacters in Game:", foundCharacters);
-
   return (
     <section className="game relative">
       <Target foundCharacters={foundCharacters} />
 
       <div className="divider"></div>
-      <div className="pt-40">
+      <div>
         <PlayGround setFoundCharacters={setFoundCharacters} />
       </div>
     </section>
