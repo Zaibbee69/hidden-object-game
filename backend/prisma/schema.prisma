@@ -24,12 +24,17 @@ model Image {
 }
 
 model Character {
-  id       Int      @id @default(autoincrement())
+  id       Int @id @default(autoincrement())
   name     String
   xPercent Float
   yPercent Float
+
   imageId  Int
-  image    Image    @relation(fields: [imageId], references: [id])
+  image    Image @relation(fields: [imageId], references: [id])
+
+  @@unique([imageId, name])
+  foundCharacters FoundCharacter[]
+  @@index([imageId])
 }
 
 model GameSession {
@@ -37,8 +42,11 @@ model GameSession {
   imageId     Int
   image       Image    @relation(fields: [imageId], references: [id])
   startedAt   DateTime @default(now())
+  completedAt DateTime?
   completed   Boolean  @default(false)
   score       Score?
+
+  foundCharacters FoundCharacter[]
 }
 
 model Score {
@@ -54,4 +62,20 @@ model Score {
   image         Image @relation(fields: [imageId], references: [id])
 
   createdAt     DateTime @default(now())
+  @@index([imageId, timeTaken])
+}
+
+model FoundCharacter {
+  id          Int @id @default(autoincrement())
+
+  sessionId   String
+  session     GameSession @relation(fields: [sessionId], references: [id])
+
+  characterId Int
+  character   Character @relation(fields: [characterId], references: [id])
+
+  foundAt     DateTime @default(now())
+
+  @@unique([sessionId, characterId])
+   @@index([sessionId])
 }
