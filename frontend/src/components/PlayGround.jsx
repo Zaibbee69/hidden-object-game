@@ -1,10 +1,13 @@
 import { useRef, useState } from "react";
 import imgSrc from "../assets/MEME_SUPREME.jpg";
+import WrongAlert from "./WrongAlert";
+import CorrectAlert from "./CorrectAlert";
 
 export default function PlayGround({ setFoundCharacters }) {
   const imageRef = useRef(null);
 
   const [selection, setSelection] = useState(null);
+  const [alertType, setAlertType] = useState(null);
 
   const handleCanvasClick = (event) => {
     if (!imageRef.current) return;
@@ -25,78 +28,37 @@ export default function PlayGround({ setFoundCharacters }) {
     });
   };
 
+  const showAlert = (type) => {
+    setAlertType(type);
+    window.setTimeout(() => setAlertType(null), 2500);
+  };
+
   const checkIfTargetFound = (character) => {
     if (!selection) return;
 
     const { imageX, imageY } = selection;
 
-    if (character === "duolingo") {
-      const target = {
-        minX: 400,
-        maxX: 700,
-        minY: 2200,
-        maxY: 3050,
-      };
+    const targets = {
+      duolingo: { minX: 400, maxX: 700, minY: 2200, maxY: 3050 },
+      spiderman: { minX: 100, maxX: 400, minY: 1500, maxY: 2350 },
+      naruto: { minX: 700, maxX: 1000, minY: 1500, maxY: 2350 },
+    };
 
-      const found =
-        imageX >= target.minX &&
-        imageX <= target.maxX &&
-        imageY >= target.minY &&
-        imageY <= target.maxY;
+    const target = targets[character];
+    if (!target) return;
 
-      if (found) {
-        alert("You found Duolingo!");
-        setFoundCharacters((prev) => ({ ...prev, duolingo: true }));
-        setSelection(null);
-      } else {
-        alert("That's not Duolingo.");
-      }
-    }
+    const found =
+      imageX >= target.minX &&
+      imageX <= target.maxX &&
+      imageY >= target.minY &&
+      imageY <= target.maxY;
 
-    if (character === "spiderman") {
-      const target = {
-        minX: 100,
-        maxX: 400,
-        minY: 1500,
-        maxY: 2350,
-      };
-
-      const found =
-        imageX >= target.minX &&
-        imageX <= target.maxX &&
-        imageY >= target.minY &&
-        imageY <= target.maxY;
-
-      if (found) {
-        alert("You found Spiderman!");
-        setFoundCharacters((prev) => ({ ...prev, spiderman: true }));
-        setSelection(null);
-      } else {
-        alert("That's not Spiderman.");
-      }
-    }
-
-    if (character === "naruto") {
-      const target = {
-        minX: 700,
-        maxX: 1000,
-        minY: 1500,
-        maxY: 2350,
-      };
-
-      const found =
-        imageX >= target.minX &&
-        imageX <= target.maxX &&
-        imageY >= target.minY &&
-        imageY <= target.maxY;
-
-      if (found) {
-        alert("You found Naruto!");
-        setFoundCharacters((prev) => ({ ...prev, naruto: true }));
-        setSelection(null);
-      } else {
-        alert("That's not Naruto.");
-      }
+    if (found) {
+      showAlert("correct");
+      setFoundCharacters((prev) => ({ ...prev, [character]: true }));
+      setSelection(null);
+    } else {
+      showAlert("wrong");
     }
   };
 
@@ -178,6 +140,17 @@ export default function PlayGround({ setFoundCharacters }) {
             </ul>
           </div>
         </>
+      )}
+
+      {alertType === "correct" && (
+        <div className="fixed top-4 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
+          <CorrectAlert />
+        </div>
+      )}
+      {alertType === "wrong" && (
+        <div className="fixed top-4 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
+          <WrongAlert />
+        </div>
       )}
     </section>
   );
