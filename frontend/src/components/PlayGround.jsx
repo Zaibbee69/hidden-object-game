@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import imgSrc from "../assets/MEME_SUPREME.jpg";
 
-export default function PlayGround() {
+export default function PlayGround({ setFoundCharacters }) {
   const imageRef = useRef(null);
 
   const [selection, setSelection] = useState(null);
@@ -30,7 +30,7 @@ export default function PlayGround() {
 
     const { imageX, imageY } = selection;
 
-    if (character === "waldo") {
+    if (character === "duolingo") {
       const target = {
         minX: 400,
         maxX: 700,
@@ -45,15 +45,58 @@ export default function PlayGround() {
         imageY <= target.maxY;
 
       if (found) {
-        alert("You found Waldo!");
+        alert("You found Duolingo!");
+        setFoundCharacters((prev) => ({ ...prev, duolingo: true }));
         setSelection(null);
       } else {
-        alert("That's not Waldo.");
+        alert("That's not Duolingo.");
       }
     }
 
-    if (character === "wizard") {
-      alert("Wizard checking not implemented yet.");
+    if (character === "spiderman") {
+      const target = {
+        minX: 100,
+        maxX: 400,
+        minY: 1500,
+        maxY: 2350,
+      };
+
+      const found =
+        imageX >= target.minX &&
+        imageX <= target.maxX &&
+        imageY >= target.minY &&
+        imageY <= target.maxY;
+
+      if (found) {
+        alert("You found Spiderman!");
+        setFoundCharacters((prev) => ({ ...prev, spiderman: true }));
+        setSelection(null);
+      } else {
+        alert("That's not Spiderman.");
+      }
+    }
+
+    if (character === "naruto") {
+      const target = {
+        minX: 700,
+        maxX: 1000,
+        minY: 1500,
+        maxY: 2350,
+      };
+
+      const found =
+        imageX >= target.minX &&
+        imageX <= target.maxX &&
+        imageY >= target.minY &&
+        imageY <= target.maxY;
+
+      if (found) {
+        alert("You found Naruto!");
+        setFoundCharacters((prev) => ({ ...prev, naruto: true }));
+        setSelection(null);
+      } else {
+        alert("That's not Naruto.");
+      }
     }
   };
 
@@ -115,13 +158,18 @@ export default function PlayGround() {
               className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
               <li>
-                <button onClick={() => checkIfTargetFound("waldo")}>
-                  Waldo
+                <button onClick={() => checkIfTargetFound("duolingo")}>
+                  Duolingo
                 </button>
               </li>
               <li>
-                <button onClick={() => checkIfTargetFound("wizard")}>
-                  Wizard
+                <button onClick={() => checkIfTargetFound("spiderman")}>
+                  Spiderman
+                </button>
+              </li>
+              <li>
+                <button onClick={() => checkIfTargetFound("naruto")}>
+                  Naruto
                 </button>
               </li>
               <li>
