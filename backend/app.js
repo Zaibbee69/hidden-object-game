@@ -7,7 +7,7 @@ const globalErrorHandler = require("./middlewares/globalErrorHandler");
 
 // Routes
 const gameImagesRouter = require("./routes/gameImagesRoute");
-
+const gameRouter = require("./routes/gameRoute");
 
 // App Setup
 const app = express();
@@ -21,6 +21,7 @@ app.use(globalErrorHandler);
 
 // Routes
 app.use("/api/game-images", gameImagesRouter);
+app.use("/api/game", gameRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
