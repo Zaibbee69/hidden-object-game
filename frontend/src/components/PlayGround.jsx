@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
-import imgSrc from "../assets/MEME_SUPREME.jpg";
 import WrongAlert from "./WrongAlert";
 import CorrectAlert from "./CorrectAlert";
 
-export default function PlayGround({ setFoundCharacters }) {
+export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
   const imageRef = useRef(null);
 
   const [selection, setSelection] = useState(null);
@@ -55,7 +54,7 @@ export default function PlayGround({ setFoundCharacters }) {
 
     if (found) {
       showAlert("correct");
-      setFoundCharacters((prev) => ({ ...prev, [character]: true }));
+      setClickedCharacters((prev) => ({ ...prev, [character]: true }));
       setSelection(null);
     } else {
       showAlert("wrong");
@@ -74,7 +73,7 @@ export default function PlayGround({ setFoundCharacters }) {
     >
       <img
         ref={imageRef}
-        src={imgSrc}
+        src={mapImageUrl}
         alt="playground"
         onClick={handleCanvasClick}
         style={{
