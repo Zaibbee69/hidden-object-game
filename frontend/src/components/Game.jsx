@@ -1,5 +1,6 @@
 import PlayGround from "./PlayGround";
 import Target from "./Target";
+import Timer from "./Timer";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -15,24 +16,22 @@ export default function Game() {
   });
 
   const [clickedCharacters, setClickedCharacters] = useState({});
+  const [isGameActive, setIsGameActive] = useState(true);
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
-  // 1. Extract the main map/background image URL from the API response
   const mapImageUrl = data?.imageUrl ? `${API_BASE}${data.imageUrl}` : "";
 
-  // 2. Derive characters and append their full API image URL paths
   const characters = data?.characters || [];
 
   const foundCharacters = {};
-  const characterImages = {}; // Keeps track of character names mapped to their image paths
+  const characterImages = {};
 
   characters.forEach((char) => {
     const key = char.name.toLowerCase();
     foundCharacters[key] = !!clickedCharacters[key];
 
-    // Construct the absolute path for each character's icon
     characterImages[key] = char.imageUrl ? `${API_BASE}${char.imageUrl}` : "";
   });
 
@@ -46,10 +45,12 @@ export default function Game() {
       <div>
         <PlayGround
           mapImageUrl={mapImageUrl}
-          dbCharacters={characters} // <-- Pass the backend data array here
+          dbCharacters={characters}
           setClickedCharacters={setClickedCharacters}
+          setIsGameActive={setIsGameActive}
         />
       </div>
+      <Timer isGameActive={isGameActive} />
     </section>
   );
 }
