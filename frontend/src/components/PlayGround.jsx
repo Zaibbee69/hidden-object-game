@@ -2,9 +2,12 @@ import { useRef, useState } from "react";
 import WrongAlert from "./WrongAlert";
 import CorrectAlert from "./CorrectAlert";
 
-export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
+export default function PlayGround({
+  mapImageUrl,
+  dbCharacters = [],
+  setClickedCharacters,
+}) {
   const imageRef = useRef(null);
-
   const [selection, setSelection] = useState(null);
   const [alertType, setAlertType] = useState(null);
 
@@ -12,16 +15,23 @@ export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
     if (!imageRef.current) return;
 
     const rect = imageRef.current.getBoundingClientRect();
-
     const scaleX = imageRef.current.naturalWidth / rect.width;
     const scaleY = imageRef.current.naturalHeight / rect.height;
 
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
+    // Calculate percent on click
+    const xPercent = (clickX / imageRef.current.naturalWidth) * 100;
+    const yPercent = (clickY / imageRef.current.naturalHeight) * 100;
+
+    console.log(
+      `DB Values -> xPercent: ${xPercent.toFixed(2)}, yPercent: ${yPercent.toFixed(2)}`,
+    );
+
     setSelection({
-      imageX: clickX,
-      imageY: clickY,
+      xPercent,
+      yPercent,
       screenX: event.clientX,
       screenY: event.clientY,
     });
@@ -32,29 +42,31 @@ export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
     window.setTimeout(() => setAlertType(null), 2500);
   };
 
-  const checkIfTargetFound = (character) => {
+  const checkIfTargetFound = (characterName) => {
     if (!selection) return;
 
-    const { imageX, imageY } = selection;
+    // Find the character profile matching the dropdown choice from database records
+    const targetCharacter = dbCharacters.find(
+      (char) => char.name.toLowerCase() === characterName.toLowerCase(),
+    );
 
-    const targets = {
-      duolingo: { minX: 400, maxX: 700, minY: 2200, maxY: 3050 },
-      spiderman: { minX: 100, maxX: 400, minY: 1500, maxY: 2350 },
-      naruto: { minX: 700, maxX: 1000, minY: 1500, maxY: 2350 },
-    };
+    if (!targetCharacter) return;
 
-    const target = targets[character];
-    if (!target) return;
+    // Define acceptable margin of error percentage (e.g., 3.5% padding around the exact target dot)
+    const ACCEPTABLE_RADIUS = 3.5;
 
-    const found =
-      imageX >= target.minX &&
-      imageX <= target.maxX &&
-      imageY >= target.minY &&
-      imageY <= target.maxY;
+    const xDiff = Math.abs(selection.xPercent - targetCharacter.xPercent);
+    const yDiff = Math.abs(selection.yPercent - targetCharacter.yPercent);
+
+    // Verify if click falls inside the tolerance radius
+    const found = xDiff <= ACCEPTABLE_RADIUS && yDiff <= ACCEPTABLE_RADIUS;
 
     if (found) {
       showAlert("correct");
-      setClickedCharacters((prev) => ({ ...prev, [character]: true }));
+      setClickedCharacters((prev) => ({
+        ...prev,
+        [characterName.toLowerCase()]: true,
+      }));
       setSelection(null);
     } else {
       showAlert("wrong");
@@ -101,7 +113,6 @@ export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
               zIndex: 1000,
             }}
           />
-
           <div
             className="dropdown"
             style={{
@@ -118,21 +129,14 @@ export default function PlayGround({ mapImageUrl, setClickedCharacters }) {
               tabIndex="-1"
               className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
-              <li>
-                <button onClick={() => checkIfTargetFound("duolingo")}>
-                  Duolingo
-                </button>
-              </li>
-              <li>
-                <button onClick={() => checkIfTargetFound("spiderman")}>
-                  Spiderman
-                </button>
-              </li>
-              <li>
-                <button onClick={() => checkIfTargetFound("naruto")}>
-                  Naruto
-                </button>
-              </li>
+              {/* Loop through characters dynamically matching database entries */}
+              {dbCharacters.map((char) => (
+                <li key={char.id}>
+                  <button onClick={() => checkIfTargetFound(char.name)}>
+                    {char.name.charAt(0).toUpperCase() + char.name.slice(1)}
+                  </button>
+                </li>
+              ))}
               <li>
                 <button onClick={() => setSelection(null)}>Cancel</button>
               </li>

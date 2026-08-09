@@ -38,18 +38,15 @@ export default function Game() {
 
   return (
     <section className="game relative">
-      {/* 3. Pass character images to Target to display their icons next to their names */}
       <Target
         foundCharacters={foundCharacters}
         characterImages={characterImages}
       />
-
       <div className="divider"></div>
-
       <div>
-        {/* 4. Pass the main map background image to the PlayGround component */}
         <PlayGround
           mapImageUrl={mapImageUrl}
+          dbCharacters={characters} // <-- Pass the backend data array here
           setClickedCharacters={setClickedCharacters}
         />
       </div>
