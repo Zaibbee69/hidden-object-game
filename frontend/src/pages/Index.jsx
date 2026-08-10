@@ -4,11 +4,12 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Loading from "../components/Loading";
 import ServerStatus from "../components/ServerStatus";
+import FaultyTerminal from "../components/FaultyTerminal";
+import { Ghost, CircleStar, Play } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Index() {
-  // 1. Fetch available game map assets dynamically from your Express API
   const {
     data: maps,
     error,
@@ -24,20 +25,47 @@ export default function Index() {
     <div className="min-h-screen flex flex-col justify-between bg-base-100">
       <Navbar />
 
-      <header className="hero bg-base-200 py-16 px-4 text-center">
-        <div className="hero-content max-w-2xl flex flex-col gap-4">
-          <h1 className="text-5xl font-black tracking-tight">
-            Welcome to <span className="text-primary">MapFinder!</span>
-            🎯
+      {/* Hero Section Container with Active Terminal Background */}
+      <header className="hero bg-base-200  text-center relative overflow-hidden">
+        {/* WebGL Canvas Background Layer */}
+        <div className="absolute inset-0 z-0 w-full h-full">
+          <FaultyTerminal
+            style={{ width: "100%", height: "100%" }}
+            scale={1.5}
+            gridMul={[2, 1]}
+            digitSize={1.2}
+            timeScale={0.5}
+            pause={false}
+            scanlineIntensity={0.5}
+            glitchAmount={1}
+            flickerAmount={1}
+            noiseAmp={1}
+            chromaticAberration={0}
+            dither={0}
+            curvature={0.1}
+            tint="#E8E800"
+            mouseReact
+            mouseStrength={0.5}
+            pageLoadAnimation
+            brightness={0.6}
+          />
+        </div>
+
+        {/* Foreground Content Stacked on Top (z-10 ensures readability) */}
+        <div className="hero-content max-w-2xl flex flex-col gap-4 relative z-10  backdrop-blur-sm p-20 rounded-2xl shadow-xl">
+          <h1 className="text-6xl font-black tracking-tight">
+            <span className="inline-flex items-center gap-2 text-white">
+              Lost <span className="text-warning">&</span> Found{" "}
+              <Ghost size={32} className="text-warning" />
+            </span>
           </h1>
           <p className="text-base-content/80 text-lg">
-            Test your perception skills! Choose an image playground map layout
-            from the catalog below, locate all the hidden target characters as
-            fast as possible, and secure your place on our global scoreboard.
+            Every click brings you closer to the truth.
           </p>
           <div className="flex justify-center gap-3 mt-2">
-            <Link to="/leaderboard" className="btn btn-outline btn-secondary">
-              🏆 View Scoreboard
+            <Link to="/leaderboard" className="btn btn-outline btn-warning">
+              <CircleStar className="text-warning" strokeWidth={1.25} /> View
+              LeaderBoard
             </Link>
           </div>
         </div>
@@ -63,7 +91,6 @@ export default function Index() {
 
         {!isLoading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* If maps is a single image object instead of an array, wrap it or loop safely */}
             {(Array.isArray(maps) ? maps : [maps]).map((map) => (
               <div
                 key={map.id}
@@ -84,12 +111,11 @@ export default function Index() {
                     Targets to find: {map.characters?.length || 3}
                   </p>
                   <div className="card-actions justify-end mt-4">
-                    {/* Route players to the match canvas, appending the specific level image asset ID */}
                     <Link
                       to={`/game?id=${map.id}`}
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-warning btn-sm"
                     >
-                      Start Hunt 🚀
+                      Start Hunt <Play strokeWidth={1.25} />
                     </Link>
                   </div>
                 </div>

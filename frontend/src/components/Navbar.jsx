@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import {Ghost} from "lucide-react"
 
 export default function Navbar() {
   return (
@@ -8,7 +9,7 @@ export default function Navbar() {
           to="/"
           className="btn btn-ghost btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl"
         >
-          Lost & Found
+          Lost & Found <Ghost />
         </Link>
       </div>
       <div className="flex-none">
@@ -16,7 +17,7 @@ export default function Navbar() {
           <li>
             <Link
               to="/leaderboard"
-              className="btn btn-soft btn-secondary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl"
+              className="btn btn-soft btn-warning btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl"
             >
               Leaderboard
             </Link>

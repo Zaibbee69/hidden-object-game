@@ -36,7 +36,7 @@ export default function Target({
               </div>
 
               {/* Dynamic taglines read directly from your Prisma records */}
-              <div className="stat-desc text-secondary truncate max-w-[140px]">
+              <div className="stat-desc text-warning truncate max-w-[140px]">
                 {char.tagline || "Find me on the map!"}
               </div>
             </div>

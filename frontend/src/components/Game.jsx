@@ -5,6 +5,7 @@ import ServerStatus from "./ServerStatus";
 import Loading from "./Loading";
 import Modal from "./Modal";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router"; // 1. Import hook
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
@@ -22,17 +23,24 @@ async function triggerStartSession(url, { arg }) {
 }
 
 export default function Game() {
+  const [searchParams] = useSearchParams(); // 2. Initialize search params
+  const mapId = searchParams.get("id"); // 3. Extract the 'id' parameter
+
   const [clickedCharacters, setClickedCharacters] = useState({});
   const [gameStatus, setGameStatus] = useState(Status.PLAYING);
   const [score, setScore] = useState(0);
   const [gameSessionId, setGameSessionId] = useState(null);
 
-  const { data, error, isLoading } = useSWR("/api/game-images/2", (url) => {
-    return fetch(`${API_BASE}${url}`).then((res) => {
-      if (!res.ok) throw new Error("Network response was not ok");
-      return res.json();
-    });
-  });
+  // 4. Update the SWR key to use mapId dynamically. If mapId doesn't exist, pass null to halt fetching.
+  const { data, error, isLoading } = useSWR(
+    mapId ? `/api/game-images/${mapId}` : null,
+    (url) => {
+      return fetch(`${API_BASE}${url}`).then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      });
+    },
+  );
 
   const { trigger: initSession } = useSWRMutation(
     `${API_BASE}/api/game/start`,
@@ -48,6 +56,8 @@ export default function Game() {
     }
   }, [data?.id, initSession]);
 
+  // Handle a state where no valid ID is passed in the URL at all
+  if (!mapId) return <div className="text-center p-8">No Map Selected</div>;
   if (error) return <ServerStatus />;
   if (isLoading || !gameSessionId) return <Loading />;
 
@@ -82,7 +92,6 @@ export default function Game() {
         />
       </div>
       <Timer gameStatus={gameStatus} setScore={setScore} />
-
       {gameStatus === Status.WON && (
         <Modal score={score} gameSessionId={gameSessionId} />
       )}

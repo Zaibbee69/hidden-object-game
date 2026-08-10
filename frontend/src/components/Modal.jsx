@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router"; // 1. Import navigate hook
 import useSWRMutation from "swr/mutation";
 
 const API_BASE = import.meta.env.VITE_API_URL;
@@ -9,16 +10,15 @@ async function sendEndGameRequest(url, { arg }) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(arg),
   });
-
   if (!response.ok) {
     throw new Error("Failed to finalize score sheet entry.");
   }
-
   return response.json();
 }
 
 export default function Modal({ score, gameSessionId }) {
   const [playerName, setPlayerName] = useState("");
+  const navigate = useNavigate(); // 2. Initialize navigator hook
 
   const { trigger, isMutating } = useSWRMutation(
     `${API_BASE}/api/game/end`,
@@ -27,7 +27,9 @@ export default function Modal({ score, gameSessionId }) {
       onSuccess: () => {
         const modal = document.getElementById("win_modal");
         if (modal) modal.close();
-        window.location.reload();
+
+        // 3. Swap page view context smoothly to the scoreboard layout
+        navigate("/leaderboard");
       },
       onError: (err) => {
         console.error(err);
@@ -46,7 +48,6 @@ export default function Modal({ score, gameSessionId }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!playerName.trim() || isMutating) return;
-
     trigger({
       gameSessionId: gameSessionId,
       playerName: playerName.trim(),
@@ -67,14 +68,12 @@ export default function Modal({ score, gameSessionId }) {
         <p className="py-2 text-base-content/80">
           Your run is validated by the server.
         </p>
-
         <div className="bg-base-200 rounded-lg p-3 my-4 flex justify-between items-center font-mono">
           <span className="font-bold">Final Clock Time:</span>
           <span className="text-xl text-primary font-black">
             {formatFinalTime(score)}
           </span>
         </div>
-
         <form
           onSubmit={handleSubmit}
           className="modal-action flex flex-col items-stretch gap-2"

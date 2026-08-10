@@ -65,4 +65,26 @@ async function endGame(req, res) {
     }
 }
 
-module.exports = { startGame, endGame };
+async function getScore(req, res) {
+    try {
+        const scores = await prisma.score.findMany({
+            orderBy: {
+                timeTaken: 'asc', // Fastest times rank first
+            },
+            include: {
+                session: {
+                    include: {
+                        image: true, // Includes map details like title
+                    },
+                },
+            },
+        });
+
+        return res.status(200).json(scores);
+    } catch (error) {
+        console.error("Failed to fetch scoreboard:", error);
+        return res.status(500).json({ error: "Failed to fetch leaderboard data" });
+    }
+}
+
+module.exports = { startGame, endGame, getScore };
