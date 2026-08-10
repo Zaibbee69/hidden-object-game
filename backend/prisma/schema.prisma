@@ -25,6 +25,7 @@ model Image {
 model Character {
   id       Int @id @default(autoincrement())
   name     String
+  tagline String @default("Find me on the map!")
   xPercent Float
   yPercent Float
   imageUrl       String

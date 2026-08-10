@@ -44,6 +44,7 @@ export default function Game() {
   return (
     <section className="game relative">
       <Target
+        dbCharacters={characters}
         foundCharacters={foundCharacters}
         characterImages={characterImages}
       />
