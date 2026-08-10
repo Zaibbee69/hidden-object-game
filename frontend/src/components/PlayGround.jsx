@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import WrongAlert from "./WrongAlert";
 import CorrectAlert from "./CorrectAlert";
+import { MapPin } from "lucide-react";
 
 const Status = {
   PLAYING: "playing",
@@ -124,28 +125,17 @@ export default function PlayGround({
         />
 
         {correctMarkers.map((marker) => (
-          <div
+          <MapPin
             key={marker.id}
             className="absolute flex items-center justify-center pointer-events-none"
+            size="32"
+            color="green"
             style={{
               left: `${marker.xPercent}%`,
               top: `${marker.yPercent}%`,
-              width: "40px",
-              height: "40px",
-              border: "3px solid #22c55e",
-              backgroundColor: "rgba(34, 197, 94, 0.2)",
-              borderRadius: "50%",
-              transform: "translate(-50%, -50%)",
               zIndex: 10,
-              boxShadow: "0 0 12px #22c55e",
             }}
-          >
-            <span
-              style={{ color: "#22c55e", fontWeight: "bold", fontSize: "16px" }}
-            >
-              ✓
-            </span>
-          </div>
+          />
         ))}
       </div>
 
