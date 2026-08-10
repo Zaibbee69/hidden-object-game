@@ -5,7 +5,7 @@ export default function Timer({ gameStatus }) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    if (!gameStatus.PLAYING) return;
+    if (gameStatus !== "playing") return;
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);

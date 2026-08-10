@@ -1,13 +1,15 @@
 import PlayGround from "./PlayGround";
 import Target from "./Target";
 import Timer from "./Timer";
+import ServerStatus from "./ServerStatus";
+import Loading from "./Loading";
+import Modal from "./Modal";
 import { useState } from "react";
 import useSWR from "swr";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
-// Export this so PlayGround can import it directly, or keep it local
-export const Status = {
+const Status = {
   PLAYING: "playing",
   WON: "won",
 };
@@ -24,8 +26,8 @@ export default function Game() {
   const [clickedCharacters, setClickedCharacters] = useState({});
   const [gameStatus, setGameStatus] = useState(Status.PLAYING);
 
-  if (error) return <div>failed to load</div>;
-  if (isLoading) return <div>loading...</div>;
+  if (error) return <ServerStatus />;
+  if (isLoading) return <Loading />;
 
   const mapImageUrl = data?.imageUrl ? `${API_BASE}${data.imageUrl}` : "";
   const characters = data?.characters || [];
@@ -50,7 +52,7 @@ export default function Game() {
         <PlayGround
           mapImageUrl={mapImageUrl}
           dbCharacters={characters}
-          clickedCharacters={clickedCharacters} // Passed down to filter dropdown menu
+          clickedCharacters={clickedCharacters}
           setClickedCharacters={setClickedCharacters}
           setGameStatus={setGameStatus}
           gameStatus={gameStatus}
@@ -59,13 +61,7 @@ export default function Game() {
 
       <Timer gameStatus={gameStatus} />
 
-      {gameStatus === Status.WON && (
-        <div className="toast toast-top toast-center">
-          <div className="alert alert-success">
-            <span>Congratulations! You found all characters!</span>
-          </div>
-        </div>
-      )}
+      {gameStatus === Status.WON && <Modal />}
     </section>
   );
 }
