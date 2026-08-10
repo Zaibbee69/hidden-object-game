@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { formatTime } from "../utils";
 
-export default function Timer({ gameStatus }) {
+export default function Timer({ gameStatus, setScore }) {
   const [seconds, setSeconds] = useState(0);
 
+  // Interval hook to count upwards
   useEffect(() => {
     if (gameStatus !== "playing") return;
 
@@ -13,6 +14,12 @@ export default function Timer({ gameStatus }) {
 
     return () => clearInterval(intervalId);
   }, [gameStatus]);
+
+  useEffect(() => {
+    if (gameStatus === "won") {
+      setScore(seconds);
+    }
+  }, [gameStatus, seconds, setScore]);
 
   return (
     <div className="toast">
