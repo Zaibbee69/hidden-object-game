@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { formatTime } from "../utils";
 
-export default function Timer({ isGameActive }) {
+export default function Timer({ gameStatus }) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    if (!isGameActive) return;
+    if (!gameStatus.PLAYING) return;
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [isGameActive]);
+  }, [gameStatus]);
 
   return (
     <div className="toast">

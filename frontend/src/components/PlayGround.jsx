@@ -2,20 +2,26 @@ import { useRef, useState } from "react";
 import WrongAlert from "./WrongAlert";
 import CorrectAlert from "./CorrectAlert";
 
+const Status = {
+  PLAYING: "playing",
+  WON: "won",
+};
+
 export default function PlayGround({
   mapImageUrl,
   dbCharacters = [],
+  clickedCharacters,
   setClickedCharacters,
+  setGameStatus,
+  gameStatus,
 }) {
   const imageRef = useRef(null);
   const [selection, setSelection] = useState(null);
   const [alertType, setAlertType] = useState(null);
-
-  // 1. Array state to hold successfully found target markers
   const [correctMarkers, setCorrectMarkers] = useState([]);
 
   const handleCanvasClick = (event) => {
-    if (!imageRef.current) return;
+    if (!imageRef.current || gameStatus === Status.WON) return;
 
     const rect = imageRef.current.getBoundingClientRect();
     const scaleX = imageRef.current.naturalWidth / rect.width;
@@ -57,8 +63,6 @@ export default function PlayGround({
 
     if (found) {
       showAlert("correct");
-
-      // 2. Add the dynamic DB coordinates of the character to your markers array
       setCorrectMarkers((prev) => [
         ...prev,
         {
@@ -69,15 +73,31 @@ export default function PlayGround({
         },
       ]);
 
-      setClickedCharacters((prev) => ({
-        ...prev,
-        [characterName.toLowerCase()]: true,
-      }));
+      setClickedCharacters((prev) => {
+        const updatedClickedCharacters = {
+          ...prev,
+          [characterName.toLowerCase()]: true,
+        };
+
+        const isGameWon = dbCharacters.every(
+          (char) => updatedClickedCharacters[char.name.toLowerCase()],
+        );
+
+        if (isGameWon) {
+          setGameStatus(Status.WON);
+        }
+
+        return updatedClickedCharacters;
+      });
       setSelection(null);
     } else {
       showAlert("wrong");
     }
   };
+
+  const activeDropdownChoices = dbCharacters.filter(
+    (char) => !clickedCharacters[char.name.toLowerCase()],
+  );
 
   return (
     <section
@@ -89,7 +109,6 @@ export default function PlayGround({
         boxSizing: "border-box",
       }}
     >
-      {/* 3. Wrap image in an exact relative container so percentage markers align precisely to the image bounds */}
       <div className="relative-image-container relative inline-block w-full">
         <img
           ref={imageRef}
@@ -99,12 +118,11 @@ export default function PlayGround({
           style={{
             width: "100%",
             height: "auto",
-            cursor: "crosshair",
+            cursor: gameStatus === Status.WON ? "default" : "crosshair",
             display: "block",
           }}
         />
 
-        {/* 4. Render permanent success markers dynamically using database percentages */}
         {correctMarkers.map((marker) => (
           <div
             key={marker.id}
@@ -114,15 +132,14 @@ export default function PlayGround({
               top: `${marker.yPercent}%`,
               width: "40px",
               height: "40px",
-              border: "3px solid #22c55e", // Green ring
+              border: "3px solid #22c55e",
               backgroundColor: "rgba(34, 197, 94, 0.2)",
               borderRadius: "50%",
-              transform: "translate(-50%, -50%)", // Perfect center shift
+              transform: "translate(-50%, -50%)",
               zIndex: 10,
               boxShadow: "0 0 12px #22c55e",
             }}
           >
-            {/* Inner check icon badge */}
             <span
               style={{ color: "#22c55e", fontWeight: "bold", fontSize: "16px" }}
             >
@@ -165,7 +182,7 @@ export default function PlayGround({
               tabIndex="-1"
               className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
-              {dbCharacters.map((char) => (
+              {activeDropdownChoices.map((char) => (
                 <li key={char.id}>
                   <button onClick={() => checkIfTargetFound(char.name)}>
                     {char.name.charAt(0).toUpperCase() + char.name.slice(1)}

@@ -6,6 +6,12 @@ import useSWR from "swr";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
+// Export this so PlayGround can import it directly, or keep it local
+export const Status = {
+  PLAYING: "playing",
+  WON: "won",
+};
+
 export default function Game() {
   const { data, error, isLoading } = useSWR("/api/game-images/2", (url) => {
     const fullUrl = `${API_BASE}${url}`;
@@ -16,13 +22,12 @@ export default function Game() {
   });
 
   const [clickedCharacters, setClickedCharacters] = useState({});
-  const [isGameActive, setIsGameActive] = useState(true);
+  const [gameStatus, setGameStatus] = useState(Status.PLAYING);
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
   const mapImageUrl = data?.imageUrl ? `${API_BASE}${data.imageUrl}` : "";
-
   const characters = data?.characters || [];
 
   const foundCharacters = {};
@@ -31,7 +36,6 @@ export default function Game() {
   characters.forEach((char) => {
     const key = char.name.toLowerCase();
     foundCharacters[key] = !!clickedCharacters[key];
-
     characterImages[key] = char.imageUrl ? `${API_BASE}${char.imageUrl}` : "";
   });
 
@@ -46,11 +50,22 @@ export default function Game() {
         <PlayGround
           mapImageUrl={mapImageUrl}
           dbCharacters={characters}
+          clickedCharacters={clickedCharacters} // Passed down to filter dropdown menu
           setClickedCharacters={setClickedCharacters}
-          setIsGameActive={setIsGameActive}
+          setGameStatus={setGameStatus}
+          gameStatus={gameStatus}
         />
       </div>
-      <Timer isGameActive={isGameActive} />
+
+      <Timer gameStatus={gameStatus} />
+
+      {gameStatus === Status.WON && (
+        <div className="toast toast-top toast-center">
+          <div className="alert alert-success">
+            <span>Congratulations! You found all characters!</span>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
