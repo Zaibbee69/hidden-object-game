@@ -18,6 +18,7 @@ const PORT = process.env.PORT;
 app.use(cors({
     origin: [
         'http://localhost:5173',
+        "https://hidden-object-game-six.vercel.app",
         "https://hidden-object-game-n40qfhfkx-zaibbee69s-projects.vercel.app"
     ]
 }));
