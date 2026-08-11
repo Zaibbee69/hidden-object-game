@@ -16,7 +16,10 @@ const PORT = process.env.PORT;
 
 // 2. Enable CORS for your frontend origin
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: [
+        'http://localhost:5173',
+        "https://hidden-object-game-n40qfhfkx-zaibbee69s-projects.vercel.app"
+    ]
 }));
 
 app.use(express.urlencoded({ extended: false }));
