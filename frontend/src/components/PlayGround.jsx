@@ -59,7 +59,6 @@ export default function PlayGround({
     const ACCEPTABLE_RADIUS = 3.5;
     const xDiff = Math.abs(selection.xPercent - targetCharacter.xPercent);
     const yDiff = Math.abs(selection.yPercent - targetCharacter.yPercent);
-
     const found = xDiff <= ACCEPTABLE_RADIUS && yDiff <= ACCEPTABLE_RADIUS;
 
     if (found) {
@@ -73,21 +72,17 @@ export default function PlayGround({
           yPercent: targetCharacter.yPercent,
         },
       ]);
-
       setClickedCharacters((prev) => {
         const updatedClickedCharacters = {
           ...prev,
           [characterName.toLowerCase()]: true,
         };
-
         const isGameWon = dbCharacters.every(
           (char) => updatedClickedCharacters[char.name.toLowerCase()],
         );
-
         if (isGameWon) {
           setGameStatus(Status.WON);
         }
-
         return updatedClickedCharacters;
       });
       setSelection(null);
