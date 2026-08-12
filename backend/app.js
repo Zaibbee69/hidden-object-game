@@ -34,8 +34,4 @@ app.use("/api/game", gameRouter);
 // --- GLOBAL ERROR HANDLER ---
 app.use(globalErrorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
-
 module.exports = app; 
